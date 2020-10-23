@@ -4,10 +4,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Hello world!
@@ -96,20 +99,23 @@ public class App {
 
         System.out.println("Nr of entries " + ts.size());
 
-        Path toPath = Paths.get("workspace/qif2csv/weg.csv");
+        Path toPath = Paths.get("/workspace/qif2csv/weg.csv");
 
         StringBuilder sb = new StringBuilder();
-        sb.append("id # date # payee # label # additionalNotes # spend # receive # balance");
+        sb.append("id # date # payee # label # additionalNotes # spend # receive");
         sb.append("\n");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        DecimalFormat numberFormat = new DecimalFormat("#,###.##", new DecimalFormatSymbols(Locale.GERMAN));
         for (Transaction t : ts) {
-            sb.append(t.id + "#");
-            sb.append(t.date + "#");
-            sb.append(t.payee + "#");
-            sb.append(t.label + "#");
-            sb.append(String.join(" || ", t.additionalNotes) + "#");
-            sb.append(t.spend + "#");
-            sb.append(t.receive + "#");
-            sb.append(t.balance + "#");
+            sb.append(t.id + " # ");
+            if(t.date != null)
+                sb.append(dateFormat.format(t.date) + " # ");
+            sb.append(t.payee + " # " );
+            sb.append(t.label + " # ");
+            sb.append(String.join(" || ", t.additionalNotes) + " # ");
+            sb.append(numberFormat.format(t.spend) + " € # ");
+            sb.append(numberFormat.format(t.receive) + " € # ");
             sb.append("\n");
         }
 
@@ -129,6 +135,5 @@ public class App {
         public List<String> additionalNotes = new ArrayList<>();
         public double spend;
         public double receive;
-        public double balance;
     }
 }
